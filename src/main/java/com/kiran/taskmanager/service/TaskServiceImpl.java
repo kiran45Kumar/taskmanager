@@ -4,6 +4,8 @@ import org.springframework.stereotype.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.kiran.taskmanager.repository.TaskRepository;
 import com.kiran.taskmanager.entity.*;
+import org.springframework.data.domain.Sort;
+
 import java.util.*;
 @Service
 public class TaskServiceImpl implements TaskService{
@@ -17,9 +19,9 @@ public class TaskServiceImpl implements TaskService{
     
     @Override
     public List<Task> getAllTasks(){
-        return taskrepository.findAll();
+        return taskrepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
-
+  
     @Override
     public Task getTaskById(Long id){
         return taskrepository.findById(id).filter(task->!task.isDeleted()).orElseThrow(()->new RuntimeException("Task not found"));
@@ -27,7 +29,7 @@ public class TaskServiceImpl implements TaskService{
   
     @Override
     public Task updateTask(Long id, Task task){
-        Task existing = getTaskById(id);
+        Task existing = taskrepository.findById(id);
         existing.setTitle(task.getTitle());
         existing.setDescription(task.getDescription()); 
         existing.setCompleted(task.isCompleted());
